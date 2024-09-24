@@ -121,25 +121,28 @@
         saveTaskToServer(taskText);
       });
 
-      function saveTaskToServer(task) {
-        fetch(
-          'https://script.google.com/macros/s/AKfycbwCkinHkz_T30C_-5w-JSjeIdilajLCDd5KBaK17PS307WNfLCOGx3WV5KDPIX7fozL/exec',
-          {
-            // Replace with your Google Apps Script URL
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ task: task }),
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            console.log('Success:', data);
-          })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
+      function saveTaskToServer(task) {fetch(
+  'https://script.google.com/macros/s/AKfycbwCkinHkz_T30C_-5w-JSjeIdilajLCDd5KBaK17PS307WNfLCOGx3WV5KDPIX7fozL/exec',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ task: task }).toString(), // 將請求體轉換為 URL 編碼格式
+  }
+)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
+    return response.text();
+  })
+  .then((data) => {
+    console.log('Success:', data);
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
       }
     </script>
   </body>
