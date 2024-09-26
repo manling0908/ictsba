@@ -1,149 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login and To-Do List</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #1f9fbe;
-        margin: 0;
-        padding: 20px;
-      }
-      h1 {
-        text-align: center;
-      }
-      .container {
-        display: none;
-        max-width: 400px;
-        margin: auto;
-        background: rgb(255, 255, 255);
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      #taskInput {
-        width: calc(100% - 22px);
-        padding: 10px;
-        margin-bottom: 10px;
-      }
-      #addTask {
-        padding: 10px;
-      }
-      ul {
-        list-style-type: none;
-        padding: 0;
-      }
-      li {
-        background: #fff;
-        margin: 5px 0;
-        padding: 10px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      }
-      .remove {
-        background: red;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1f9fbe;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: none;
+            max-width: 400px;
+            margin: auto;
+            background: rgb(255, 255, 255);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #taskInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #addTask {
+            padding: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #fff;
+            margin: 5px 0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .remove {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .completed {
+            text-decoration: line-through; /* Strikethrough effect */
+            color: gray; /* Change text color to gray */
+        }
+        #logoutButton {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f44336; /* Red background */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <!-- Login Form -->
     <div id="loginContainer" class="container">
-      <h1>Login</h1>
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button id="loginButton">Login</button>
+        <h1>Login</h1>
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button id="loginButton">Login</button>
     </div>
 
     <!-- To-Do List -->
     <div id="todoContainer" class="container">
-      <h1>To-Do List</h1>
-      <input type="text" id="taskInput" placeholder="Enter a new task" />
-      <button id="addTask">Add Task</button>
-      <ul id="taskList"></ul>
+        <h1>To-Do List</h1>
+        <input type="text" id="taskInput" placeholder="Enter a new task" />
+        <button id="addTask">Add Task</button>
+        <button id="logoutButton">Logout</button> <!-- Logout Button -->
+        <ul id="taskList"></ul>
     </div>
 
     <script>
-      let storedUsername = 'user';
-      let storedPassword = 'pass';
+        let storedUsername = 'user';
+        let storedPassword = 'pass';
 
-      // Show the login container
-      document.getElementById('loginContainer').style.display = 'block';
+        // Show the login container
+        document.getElementById('loginContainer').style.display = 'block';
 
-      document
-        .getElementById('loginButton')
-        .addEventListener('click', function () {
-          const username = document.getElementById('username').value.trim();
-          const password = document.getElementById('password').value.trim();
+        document.getElementById('loginButton').addEventListener('click', function () {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
 
-          if (username === '' || password === '') {
-            alert('Please enter both username and password.');
-            return;
-          }
+            if (username === '' || password === '') {
+                alert('Please enter both username and password.');
+                return;
+            }
 
-          if (username === storedUsername && password === storedPassword) {
-            document.getElementById('loginContainer').style.display = 'none';
-            document.getElementById('todoContainer').style.display = 'block';
-          } else {
-            alert('Invalid username or password.');
-          }
+            if (username === storedUsername && password === storedPassword) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('todoContainer').style.display = 'block';
+                loadTasks(); // Load tasks after successful login
+            } else {
+                alert('Invalid username or password.');
+            }
         });
 
-      document.getElementById('addTask').addEventListener('click', function () {
-        const taskInput = document.getElementById('taskInput');
-        const taskText = taskInput.value.trim();
-        if (taskText === '') return;
+        document.getElementById('addTask').addEventListener('click', function () {
+            const taskInput = document.getElementById('taskInput');
+            const taskText = taskInput.value.trim();
+            if (taskText === '') return;
 
-        const li = document.createElement('li');
-        li.textContent = taskText;
+            const li = document.createElement('li');
 
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Remove';
-        removeBtn.classList.add('remove');
-        removeBtn.addEventListener('click', function () {
-          li.remove();
+            // Create checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.addEventListener('change', function () {
+                // Toggle completed class on checkbox change
+                if (checkbox.checked) {
+                    li.classList.add('completed');
+                } else {
+                    li.classList.remove('completed');
+                }
+            });
+
+            li.appendChild(checkbox);
+            li.appendChild(document.createTextNode(taskText));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = 'Remove';
+            removeBtn.classList.add('remove');
+            removeBtn.addEventListener('click', function () {
+                // Confirmation dialog before removing the task
+                if (confirm('Are you sure you want to remove this task?')) {
+                    li.remove();
+                }
+            });
+
+            li.appendChild(removeBtn);
+            document.getElementById('taskList').appendChild(li);
+            taskInput.value = '';
+
+            // Save the task to the Google Sheet
+            saveTaskToServer(taskText);
         });
 
-        li.appendChild(removeBtn);
-        document.getElementById('taskList').appendChild(li);
-        taskInput.value = '';
+        // Save the task to the server
+        function saveTaskToServer(task) {
+            fetch('https://script.google.com/macros/s/AKfycbwCkinHkz_T30C_-5w-JSjeIdilajLCDd5KBaK17PS307WNfLCOGx3WV5KDPIX7fozL/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ task: task }).toString(),
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.text();
+                })
+                .then((data) => {
+                    console.log('Success:', data);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
 
-        // Save the task to the Google Sheet
-        saveTaskToServer(taskText);
-      });
+        // Load tasks from the Google Sheet
+        function loadTasks() {
+            fetch('https://script.google.com/macros/s/AKfycbwCkinHkz_T30C_-5w-JSjeIdilajLCDd5KBaK17PS307WNfLCOGx3WV5KDPIX7fozL/exec?doGetTasks', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // Populate the task list with the retrieved tasks
+                    data.forEach(task => {
+                        const li = document.createElement('li');
 
-      function saveTaskToServer(task) {fetch(
-  'https://script.google.com/macros/s/AKfycbwCkinHkz_T30C_-5w-JSjeIdilajLCDd5KBaK17PS307WNfLCOGx3WV5KDPIX7fozL/exec',
-  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({ task: task }).toString(), // 將請求體轉換為 URL 編碼格式
-  }
-)
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok ' + response.statusText);
-    }
-    return response.text();
-  })
-  .then((data) => {
-    console.log('Success:', data);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-      }
+                        // Create checkbox
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.addEventListener('change', function () {
+                            // Toggle completed class on checkbox change
+                            if (checkbox.checked) {
+                                li.classList.add('completed');
+                            } else {
+                                li.classList.remove('completed');
+                            }
+                        });
+
+                        li.appendChild(checkbox);
+                        li.appendChild(document.createTextNode(task));
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.textContent = 'Remove';
+                        removeBtn.classList.add('remove');
+                        removeBtn.addEventListener('click', function () {
+                            // Confirmation dialog before removing the task
+                            if (confirm('Are you sure you want to remove this task?')) {
+                                li.remove();
+                            }
+                        });
+
+                        li.appendChild(removeBtn);
+                        document.getElementById('taskList').appendChild(li);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Logout function
+        document.getElementById('logoutButton').addEventListener('click', function () {
+            document.getElementById('todoContainer').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'block';
+            // Clear the username and password fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        });
+
     </script>
-  </body>
+</body>
 </html>
